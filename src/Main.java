@@ -58,7 +58,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        String filePath = "D:\\IdeaProjects\\untitled1\\src\\employee_projects.csv";
+        String filePath = "D:\\IdeaProjects\\Dimitar-Todorov-emplyees\\src\\employee_projects.csv";
         try {
             List<Project> projects = readEmployeeProjects(filePath);
             int[] longestPair = findLongestWorkingPair(projects);
