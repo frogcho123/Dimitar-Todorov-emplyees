@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -86,24 +88,29 @@ public class Main {
     }
 
     private static int[] findLongestWorkingPair(List<Project> projects) {
-        int maxDays = 0;
         int[] longestPair = new int[3];
+        Map<Map<Integer,Integer>,Integer> mapResult= new HashMap<>();
         for (int i = 0; i < projects.size() - 1; i++) {
             for (int j = i + 1; j < projects.size(); j++) {
                 Project proj1 = projects.get(i);
                 Project proj2 = projects.get(j);
                 if (proj1.projectId == proj2.projectId) {
                     int days = calculateOverlap(proj1.getDateFrom(), proj1.getDateTo(), proj2.getDateFrom(), proj2.getDateTo());
-                    if (days > maxDays) {
-                        maxDays = days;
-                        longestPair[0] = proj1.getEmpId();
-                        longestPair[1] = proj2.getEmpId();
-                        longestPair[2] = maxDays;
+                    int emplId1=proj1.empId;
+                    int emplId2=proj2.empId;
+                    Map<Integer,Integer> emplsId=new HashMap<>();
+                    emplsId.put(emplId1,emplId2);
+                    if(mapResult.containsKey(emplsId)){
+                        mapResult.put(emplsId,days+mapResult.get(emplsId));
                     }
+                    else {
+                        mapResult.put(emplsId,days);
+                    }
+                    longestPair=result(mapResult);
+
                 }
             }
         }
-
         return longestPair;
     }
 
@@ -122,4 +129,23 @@ public class Main {
         }
         return overlap;
     }
+
+    private static int[] result(Map<Map<Integer,Integer>,Integer> map){
+        int[] longestPair = new int[3];
+        int maxDays=0;
+        for (Map.Entry<Map<Integer,Integer>,Integer> entry : map.entrySet()) {
+            if(entry.getValue()>maxDays){
+                Map<Integer,Integer> temp=entry.getKey();
+                for(Map.Entry<Integer,Integer> emplIds : temp.entrySet()){
+                    longestPair[0]=emplIds.getKey();
+                    longestPair[1]=emplIds.getValue();
+                }
+                longestPair[2]=entry.getValue();
+                maxDays=entry.getValue();
+            }
+        }
+        return longestPair;
+    }
 }
+
+
